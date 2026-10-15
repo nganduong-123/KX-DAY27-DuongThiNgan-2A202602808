@@ -100,7 +100,7 @@ Thresholds live in `common/schemas.py` (`AUTO_APPROVE_THRESHOLD = 0.73`, `ESCALA
 
 - Python 3.11+
 - [uv](https://docs.astral.sh/uv/) package manager
-- An [OpenRouter](https://openrouter.ai/keys) API key (free tier has $1 credit)
+- An [OpenRouter](https://openrouter.ai/keys) API key, or a Groq API key
 - A GitHub Personal Access Token — see next section
 
 No Docker, no Postgres install, no `gh` CLI. The agent talks to GitHub directly via the REST API. Audit + checkpointer state both live in a single SQLite file (`./hitl_audit.db`) created automatically on first run.
@@ -136,7 +136,16 @@ uv sync                                     # install Python deps
 cp .env.example .env && $EDITOR .env        # set OPENROUTER_API_KEY and GITHUB_TOKEN
 ```
 
+To use Groq instead, set `LLM_PROVIDER=groq`, `GROQ_API_KEY`, and the Groq
+model/base URL shown in `.env.example`. The default OpenRouter setup remains
+compatible with the original lab instructions.
+
 The SQLite file `hitl_audit.db` is created on demand when exercise 4 runs.
+Run the local verification suite with:
+
+```bash
+uv run python -m unittest discover -s tests -v
+```
 
 ## Demo PRs
 

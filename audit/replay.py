@@ -23,6 +23,13 @@ from common.db import db_conn, replay_events
 RISK_COLOR = {"low": "green", "med": "yellow", "high": "red"}
 
 
+def console_safe(value: object, console: Console) -> str:
+    """Make model-generated text printable on legacy Windows code pages."""
+    text = str(value)
+    encoding = getattr(console.file, "encoding", None) or "utf-8"
+    return text.encode(encoding, errors="replace").decode(encoding)
+
+
 async def list_threads() -> None:
     console = Console()
     async with db_conn() as conn:
@@ -70,7 +77,7 @@ async def replay(thread_id: str) -> None:
         risk = ev["risk_level"]
         risk_colored = f"[{RISK_COLOR.get(risk, 'white')}]{risk:<4}[/]"
         reviewer = ev["reviewer_id"] or "-"
-        reason = (ev["reason"] or "")[:60]
+        reason = console_safe((ev["reason"] or "")[:60], console)
         console.print(
             f"[dim]{ev['timestamp']}[/dim]  "
             f"[cyan]{ev['action']:<18}[/cyan] "
